@@ -32,5 +32,5 @@ app.post("/", (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`im fokin running in http://localhost:${port}`)
+  console.log(`is running in http://localhost:${port}`)
 })
