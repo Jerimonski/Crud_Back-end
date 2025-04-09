@@ -13,7 +13,7 @@ class UsuarioDao {
 
   async create(usuario) {
     const query = `
-      INSERT INTO usuario (nombre, apellido, fecha_nacimiento, email, contraseña)
+      INSERT INTO usuario (nombre, email, contraseña)
       VALUES ($1, $2, $3)
       RETURNING *`;
     const values = [usuario.nombre, usuario.email, usuario.contraseña];
