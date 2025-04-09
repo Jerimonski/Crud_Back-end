@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 
 /*
@@ -6,6 +7,7 @@ carga las rutas
  */
 const usuarioRoutes = require("./routes/usuarioRoutes");
 
+app.use(cors());
 app.use(express.json());
 /*
 cañade un prefijo a la ruta
@@ -25,7 +27,7 @@ app.listen(PORT, () => {
 //let items = []
 
 //app.use(
-//  express.urlencoded({
+//  express.urlencoded({s
 //    extended: true,
 //  })
 //)
