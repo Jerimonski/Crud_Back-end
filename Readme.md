@@ -1,27 +1,37 @@
-# no tocar, para activar solo seguir instrucciones hasta npm install
+# Crud_Back-end
 
-# Como inicio el proyecto
+Este repositorio contiene el backend de un proyecto CRUD desarrollado con Node.js, Express y PostgreSQL.
 
-Inicializa un proyecto Node.js
+Está pensado para trabajar conectado a un frontend (como el de Crud_Front-end), pero también es totalmente funcional por sí solo mediante herramientas de prueba como Postman.
 
-    npm init -y
+# Requisitos previos
 
-Instala las dependencias necesarias
+Antes de iniciar, asegúrate de tener instalado:
 
-    npm install express pg dotenv
-    npm install --save-dev nodemon
+Node.js y npm
 
-#
+Git Bash (u otro terminal compatible)
 
-# Cuando descargan el proyecto no olvidad hacer el npm install para cargar las dependencias del package.json
+PostgreSQL
 
-    npm install
+Postman (opcional, para pruebas)
 
-# Iniciar en localhost
+# instalación y ejecución
 
+Inicializa el proyecto (si estás comenzando desde cero):
+npm init -y
+Este comando fue probado en Git Bash. Otros terminales podrían variar.
+
+Instala las dependencias necesarias:
+npm install express pg dotenv
+npm install --save-dev nodemon
+
+No olvides ejecutar también npm install si descargas el proyecto con un package.json ya creado, para que se instalen todas las dependencias.
+
+Iniciar el servidor:
 npx nodemon src/index.js
 
-# Probar en postman
+# Pruebas con Postman
 
 get usuario by id
 http://localhost:3000/usuarios/1
@@ -41,11 +51,11 @@ Escribe los datos en formato JSON:
 
 {
 "nombre": "Juan",
-"apellido": "Pérez",
-"fecha_nacimiento": 19900101,
 "email": "juan@example.com",
 "contraseña": "secreta"
 }
+
+No incluyas el campo id, ya que se genera automáticamente en la base de datos. No se ha probado qué ocurre si se fuerza ese campo, así que es mejor no hacerlo.
 
 Actualizar un usuario (PUT /usuarios/:id)
 
@@ -100,3 +110,45 @@ Para asegurarte de que PM2 se reinicie automáticamente después de un reinicio 
 
 pm2 startup
 pm2 save
+
+# Solución de problemas
+
+Nos enfrentamos a una situación donde todo funcionaba correctamente excepto el método POST. Después de revisar el código del backend sin encontrar errores, descubrimos que el problema estaba relacionado con los permisos del usuario de PostgreSQL definidos en el archivo .env.
+
+Para solucionarlo, se accedió al servidor de la base de datos usando PuTTY, y desde allí se otorgaron los permisos necesarios al usuario.
+
+# Buenas prácticas
+
+Haz commit regularmente y sube los cambios a GitHub para evitar pérdidas de información.
+
+Sigue el mismo flujo de trabajo y convenciones definidas en el repositorio del frontend.
+
+Asegúrate de tener configurado correctamente tu archivo .env (no incluido por seguridad) para que las variables de entorno se conecten a tu base de datos local.
+
+# Estructura del proyecto (explicación para quien comienza)
+
+     Este proyecto fue hecho por alguien que no comenzó como desarrolladora backend, así que si te toca continuar este trabajo y estás en una situación parecida: respira, que todo se puede aprender. Esta es una guía para que no te sientas tan perdido/a como yo al principio.
+
+La estructura de carpetas está organizada de la forma más simple posible para que sea fácil entender qué hace cada parte:
+
+Crud_Back-end/
+├── node_modules/ ← Se genera automáticamente al instalar dependencias con npm
+├── src/ ← Aquí va todo el código principal del backend
+│ ├── db/ ← Archivo de conexión con la base de datos
+│ ├── routes/ ← Aquí están las rutas o endpoints del servidor (por ejemplo: GET, POST de usuarios)
+│ ├── controllers/ ← Aquí están las funciones que definen la lógica (lo que hace cada endpoint)
+│ └── index.js ← Archivo que levanta el servidor y conecta todo
+├── .env ← Variables sensibles como usuario y contraseña de la base de datos (NO subir a GitHub)
+├── .gitignore ← Archivos y carpetas que no deben subirse al repositorio (como node_modules o .env)
+├── package.json ← Lista de dependencias, scripts y metadatos del proyecto
+└── README.md ← Este mismo documento, con instrucciones y contexto
+
+# ¿Por qué está todo separado?
+
+db/: Separar la conexión a la base de datos te permite modificarla sin tocar el resto del código. Es útil si cambias de entorno (por ejemplo: de local a producción).
+
+routes/: Aquí defines las “puertas” por donde se accede a tu backend. Por ejemplo, qué pasa cuando se hace un GET a /usuarios/.
+
+controllers/: Aquí está lo que realmente hacen las rutas. La lógica va separada para que el código esté más limpio y ordenado.
+
+index.js: Es el punto de entrada del servidor. Aquí se juntan las rutas, la base de datos y se levanta el servidor con Express.
