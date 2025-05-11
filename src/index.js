@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const comentariosRouter = require("./routes/comentarios");
 const app = express();
 
 /*
@@ -19,6 +20,7 @@ app.listen(PORT, () => {
   console.log(`Servidor escuchando en puerto ${PORT}`);
 });
 
+app.use("/comentarios", comentariosRouter);
 //const express = require("express")
 //const cors = require("cors")
 //const app = express()
