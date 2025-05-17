@@ -8,13 +8,7 @@ const app = express()
 carga las rutas
  */
 
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-)
+app.use(cors())
 app.use(express.json())
 /*
 cañade un prefijo a la ruta
