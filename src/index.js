@@ -14,7 +14,7 @@ app.use(express.json())
 cañade un prefijo a la ruta
  */
 app.use("/usuarios", usuarioRoutes)
-// app.use("/comentarios", comentariosRouter)
+app.use("/comentarios", comentariosRouter)
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
