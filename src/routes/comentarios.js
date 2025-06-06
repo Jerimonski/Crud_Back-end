@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const pool = require("../database");
+const pool = require("../database/connection");
 
 router.get("/", async (req, res) => {
   try {
