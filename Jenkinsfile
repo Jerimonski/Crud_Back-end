@@ -11,7 +11,16 @@ pipeline {
         sh 'npm install'
       }
     }
-
+    stage('SonarQube Analysis') {
+      steps {
+        withSonarQubeEnv('SonarQubeCommunity') {
+          withCredentials([string(credentialsId: 'sonar-token-back', variable: 'SONAR_TOKEN')]) {
+            sh 'npx sonar-scanner -Dsonar.login=$SONAR_TOKEN'
+          }
+        }
+      }
+    }
+    
     stage('Deploy') {
       steps {
         script {
