@@ -1,4 +1,4 @@
-const usuarioDao = require("../daos/usuarioDao");
+import usuarioDao from '../daos/usuarioDao.js'; // importa correctamente el DAO
 
 class UsuarioService {
   getAll() {
@@ -22,4 +22,4 @@ class UsuarioService {
   }
 }
 
-module.exports = new UsuarioService();
+export default new UsuarioService();

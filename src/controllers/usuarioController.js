@@ -1,5 +1,5 @@
-const UsuarioService = require("../services/usuarioService");
-const UsuarioDto = require("../dtos/usuarioDto");
+import UsuarioService from '../services/usuarioService.js';
+import UsuarioDto from '../dtos/usuarioDto.js';
 
 class UsuarioController {
   async getAll(req, res) {
@@ -32,4 +32,4 @@ class UsuarioController {
   }
 }
 
-module.exports = new UsuarioController();
+export default new UsuarioController();
