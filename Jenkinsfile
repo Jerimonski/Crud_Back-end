@@ -36,7 +36,7 @@ pipeline {
                 else
                   echo "No hay procesos ${runName} corriendo"
                 fi
-              '
+              ' || true
               
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 'rm -rf ${path}/*'
 
