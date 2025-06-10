@@ -30,16 +30,23 @@ pipeline {
 
           withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-serverb', keyFileVariable: 'SSH_KEY')]) {
             sh """
-             ssh -i $SSH_KEY deployadmin@38.242.243.201 '
+              ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 if pgrep -f "${runName}" > /dev/null; then
                   pkill -f "${runName}" || true
                 else
                   echo "No hay procesos ${runName} corriendo"
                 fi
-              ' || true
+              '
+              
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 'rm -rf ${path}/*'
-              scp -i \$SSH_KEY -r * deployadmin@38.242.243.201:${path}
-              ssh -i \$SSH_KEY deployadmin@38.242.243.201 "cd ${path} && nohup npx nodemon src/index.js > log.txt 2>&1 & echo \$! > ${runName}.pid"
+
+              scp -i \$SSH_KEY -r package.json package-lock.json sonar-project.properties src Jenkinsfile Readme.md deployadmin@38.242.243.201:${path}
+
+              ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
+                cd ${path} &&
+                npm install &&
+                nohup node src/index.js > log.txt 2>&1 & echo \$! > ${runName}.pid
+              '
             """
           }
         }
