@@ -11,16 +11,17 @@ pipeline {
         sh 'npm install'
       }
     }
+
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv('SonarQubeCommunity') {
           withCredentials([string(credentialsId: 'sonar-token-back', variable: 'SONAR_TOKEN')]) {
-            sh 'npx sonar-scanner -Dsonar.login=$SONAR_TOKEN'
+            sh 'npx sonar-scanner -Dsonar.token=$SONAR_TOKEN'
           }
         }
       }
     }
-    
+
     stage('Deploy') {
       steps {
         script {
@@ -29,10 +30,10 @@ pipeline {
 
           withCredentials([sshUserPrivateKey(credentialsId: 'ssh-credential-id-serverb', keyFileVariable: 'SSH_KEY')]) {
             sh """
-              ssh -i \$SSH_KEY deployadmin@194.163.140.23 'pkill -f \\"${runName}\\" || true'
-              ssh -i \$SSH_KEY deployadmin@194.163.140.23 'rm -rf ${path}/*'
-              scp -i \$SSH_KEY -r * deployadmin@194.163.140.23:${path}
-              ssh -i \$SSH_KEY deployadmin@194.163.140.23 "cd ${path} && nohup npx nodemon src/index.js > log.txt 2>&1 & echo \$! > ${runName}.pid"
+              ssh -i \$SSH_KEY deployadmin@38.242.243.201 'pkill -f "${runName}" || true'
+              ssh -i \$SSH_KEY deployadmin@38.242.243.201 'rm -rf ${path}/*'
+              scp -i \$SSH_KEY -r * deployadmin@38.242.243.201:${path}
+              ssh -i \$SSH_KEY deployadmin@38.242.243.201 "cd ${path} && nohup npx nodemon src/index.js > log.txt 2>&1 & echo \$! > ${runName}.pid"
             """
           }
         }
@@ -40,4 +41,3 @@ pipeline {
     }
   }
 }
-
