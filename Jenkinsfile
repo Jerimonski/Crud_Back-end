@@ -53,8 +53,9 @@ pipeline {
                 cd ${path} &&
                 mv ${envFile} .env &&
                 npm install &&
-                setsid npm ${params.DEPLOY_ENV == "development" ? "run start:dev" : "run start:prod"} > log.txt 2>&1 < /dev/null &
+                nohup npm ${params.DEPLOY_ENV == "development" ? "run start:dev" : "run start:prod"} > log.txt 2>&1 < /dev/null & disown
                 echo \$! > ${runName}.pid
+
               '
             """
           }
