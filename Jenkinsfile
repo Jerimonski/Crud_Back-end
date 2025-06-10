@@ -28,10 +28,15 @@ pipeline {
           def path = params.DEPLOY_ENV == 'development' ? '/home/deployadmin/backend-dev' : '/home/deployadmin/backend-prod'
           def runName = params.DEPLOY_ENV == 'development' ? 'backend-dev' : 'backend-prod'
 
-          // Aquí actualizamos el id de la credencial a la correcta
           withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-serverb', keyFileVariable: 'SSH_KEY')]) {
             sh """
-              ssh -i \$SSH_KEY deployadmin@38.242.243.201 'pkill -f "${runName}" || true'
+              ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
+                if pgrep -f "${runName}" > /dev/null; then
+                  pkill -f "${runName}"
+                else
+                  echo "No hay procesos ${runName} corriendo"
+                fi
+              '
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 'rm -rf ${path}/*'
               scp -i \$SSH_KEY -r * deployadmin@38.242.243.201:${path}
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 "cd ${path} && nohup npx nodemon src/index.js > log.txt 2>&1 & echo \$! > ${runName}.pid"
