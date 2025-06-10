@@ -27,6 +27,7 @@ pipeline {
         script {
           def path = params.DEPLOY_ENV == 'development' ? '/home/deployadmin/backend-dev' : '/home/deployadmin/backend-prod'
           def runName = params.DEPLOY_ENV == 'development' ? 'backend-dev' : 'backend-prod'
+          def envFile = params.DEPLOY_ENV == 'development' ? '.env.development' : '.env.production'
 
           withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-serverb', keyFileVariable: 'SSH_KEY')]) {
             sh """
@@ -37,10 +38,10 @@ pipeline {
                   echo "No hay procesos ${runName} corriendo"
                 fi
               ' || true
-              
+
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 'rm -rf ${path}/*'
 
-              scp -i \$SSH_KEY -r package.json package-lock.json sonar-project.properties src Jenkinsfile Readme.md deployadmin@38.242.243.201:${path}
+              scp -i \$SSH_KEY -r package.json package-lock.json sonar-project.properties src Jenkinsfile Readme.md ${envFile} deployadmin@38.242.243.201:${path}
 
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 cd ${path} &&
