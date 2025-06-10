@@ -55,7 +55,7 @@ pipeline {
                 npm install &&
                 nohup npm ${params.DEPLOY_ENV == "development" ? "run start:dev" : "run start:prod"} > log.txt 2>&1 < /dev/null & disown
                 echo \$! > ${runName}.pid
-
+                exit 0
               '
             """
           }
