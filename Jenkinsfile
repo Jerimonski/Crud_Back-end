@@ -51,6 +51,7 @@ pipeline {
               # Instalar dependencias y arrancar la app
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 cd ${path} &&
+                mv ${envFile} .env &&
                 npm install &&
                 nohup npm ${params.DEPLOY_ENV == 'development' ? 'run start:dev' : 'run start:prod'} > log.txt 2>&1 & echo \$! > ${runName}.pid
               '
