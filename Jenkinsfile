@@ -28,7 +28,8 @@ pipeline {
           def path = params.DEPLOY_ENV == 'development' ? '/home/deployadmin/backend-dev' : '/home/deployadmin/backend-prod'
           def runName = params.DEPLOY_ENV == 'development' ? 'backend-dev' : 'backend-prod'
 
-          withCredentials([sshUserPrivateKey(credentialsId: 'ssh-credential-id-serverb', keyFileVariable: 'SSH_KEY')]) {
+          // Aquí actualizamos el id de la credencial a la correcta
+          withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-serverb', keyFileVariable: 'SSH_KEY')]) {
             sh """
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 'pkill -f "${runName}" || true'
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 'rm -rf ${path}/*'
