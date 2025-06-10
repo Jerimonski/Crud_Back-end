@@ -4,10 +4,6 @@ const usuarioRoutes = require("./routes/usuarioRoutes")
 const comentariosRouter = require("./routes/comentarios")
 const app = express()
 
-/*
-carga las rutas
- */
-
 app.use(cors())
 app.use(express.json())
 /*
