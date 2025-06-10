@@ -45,7 +45,7 @@ pipeline {
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 cd ${path} &&
                 npm install &&
-                nohup node src/index.js > log.txt 2>&1 & echo \$! > ${runName}.pid
+                nohup npm ${params.DEPLOY_ENV == 'development' ? 'run start:dev' : 'run start:prod'} > log.txt 2>&1 & echo \$! > ${runName}.pid
               '
             """
           }
