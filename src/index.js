@@ -30,7 +30,7 @@ carga las rutas
  */
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN,
+  origin: *,
   credentials: true
 }));
 
