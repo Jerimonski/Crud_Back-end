@@ -58,10 +58,12 @@ pipeline {
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 cd ${path} &&
                 mv ${envFile} .env &&
-                echo "Archivo ${envFile} renombrado a .env."
+                echo "Archivo ${envFile} renombrado a .env." &&
+                cat .env
               '
 
               # Realizar la instalación de dependencias y arrancar la aplicación
+              echo 'Iniciando la aplicación en el servidor...'
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 cd ${path} &&
                 npm install &&
