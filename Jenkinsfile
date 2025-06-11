@@ -8,28 +8,16 @@ pipeline {
   stages {
     stage('Instalar dependencias') {
       steps {
-        script {
-          echo 'Instalando dependencias...'
-        }
         sh 'npm install'
-        script {
-          echo 'Dependencias instaladas correctamente.'
-        }
       }
     }
 
     stage('SonarQube Analysis') {
       steps {
-        script {
-          echo 'Iniciando análisis en SonarQube...'
-        }
         withSonarQubeEnv('SonarQubeCommunity') {
           withCredentials([string(credentialsId: 'sonar-token-back', variable: 'SONAR_TOKEN')]) {
             sh 'npx sonar-scanner -Dsonar.token=$SONAR_TOKEN'
           }
-        }
-        script {
-          echo 'Análisis de SonarQube completado.'
         }
       }
     }
@@ -37,45 +25,39 @@ pipeline {
     stage('Deploy') {
       steps {
         script {
-          echo "Preparando despliegue para el entorno: ${params.DEPLOY_ENV}"
-          
           def path = params.DEPLOY_ENV == 'development' ? '/home/deployadmin/backend-dev' : '/home/deployadmin/backend-prod'
           def runName = params.DEPLOY_ENV == 'development' ? 'backend-dev' : 'backend-prod'
           def envFile = params.DEPLOY_ENV == 'development' ? '.env.development' : '.env.production'
           def envMode = params.DEPLOY_ENV == 'development' ? 'development' : 'production'
 
-          echo "Configuración: path=${path}, runName=${runName}, envFile=${envFile}, envMode=${envMode}"
-          
-          // Definir el archivo .env que se usará
-          def envFilePath = params.DEPLOY_ENV == 'development' ? '.env.development' : '.env.production'
-          def defaultEnvFile = '.env'  // El archivo que PM2 usará como principal
-
-          echo "Usando archivo de entorno: ${envFilePath}"
+          echo "Preparando el despliegue para el entorno: ${params.DEPLOY_ENV}"
 
           withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-serverb', keyFileVariable: 'SSH_KEY')]) {
             sh """
-              echo 'Conectando al servidor y deteniendo cualquier proceso existente en PM2...'
+              # Conexión SSH al servidor para detener el proceso PM2 y limpiar el directorio de despliegue
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 pm2 delete ${runName} || true
-                echo 'Proceso PM2 detenido, limpiando directorio de despliegue...'
                 rm -rf ${path}/*
                 exit 0
               '
 
-              echo 'Copiando archivos al servidor...'
-              scp -i \$SSH_KEY -r package.json package-lock.json sonar-project.properties src Jenkinsfile Readme.md ${envFilePath} deployadmin@38.242.243.201:${path}
+              # Renombrar el archivo .env en el sistema local antes de copiarlo
+              if [ "${params.DEPLOY_ENV}" == "development" ]; then
+                mv .env.development ${envFile}
+              else
+                mv .env.production ${envFile}
+              fi
 
-              echo 'Renombrando el archivo de entorno y configurando el servidor...'
-              scp -i \$SSH_KEY ${envFilePath} deployadmin@38.242.243.201:${path}/${defaultEnvFile}
+              # Copiar los archivos necesarios al servidor
+              scp -i \$SSH_KEY -r package.json package-lock.json sonar-project.properties src Jenkinsfile Readme.md ${envFile} deployadmin@38.242.243.201:${path}
 
+              # Conexión SSH al servidor para renombrar el archivo de entorno y arrancar la aplicación
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 cd ${path} &&
-                mv ${defaultEnvFile} .env &&
-                echo 'Archivo de entorno renombrado a .env, instalando dependencias y arrancando la aplicación...'
-                npm install &&
-                pm2 start src/index.js --name ${runName} --env ${envMode} --update-env &&
-                pm2 save &&
-                echo 'Aplicación desplegada correctamente.'
+                mv ${envFile} .env &&  # Renombrar el archivo .env
+                npm install &&  # Instalar dependencias
+                pm2 start src/index.js --name ${runName} --env ${envMode} --update-env &&  # Iniciar la aplicación con PM2
+                pm2 save  # Guardar el estado de PM2
               '
             """
           }
