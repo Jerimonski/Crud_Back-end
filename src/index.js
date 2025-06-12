@@ -30,7 +30,8 @@ carga las rutas
  */
 
 app.use(cors({
-  origin: '*',
+  origin: (origin, callback) => callback(null, true),
+  credentials: true
 }));
 /*
 añade un prefijo a la ruta
