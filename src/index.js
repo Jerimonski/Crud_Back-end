@@ -29,16 +29,9 @@ app.use(express.json())
 carga las rutas
  */
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Permitir requests sin origin (ej: postman) o cualquier origen
-    if (!origin) return callback(null, true);
-    callback(null, true);
-  },
-  credentials: true
-};
-
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: '*',
+}));
 /*
 añade un prefijo a la ruta
  */
