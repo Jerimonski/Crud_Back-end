@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# Parámetro: env (dev o prod)
 ENV=$1
 
-# Configuración según el entorno
 if [ "$ENV" == "dev" ]; then
   DB_NAME="taller01_dev"
 elif [ "$ENV" == "prod" ]; then
@@ -13,26 +11,26 @@ else
   exit 1
 fi
 
-# Ruta para backups (cambiada a deployadmin)
-BACKUP_DIR="/home/deployadmin/db_backups"
+# Datos del servidor remoto
+REMOTE_USER="root"
+REMOTE_IP="38.242.243.201"
 
-# Crear carpeta si no existe
-mkdir -p "$BACKUP_DIR"
+# Ruta donde guardar backup en servidor remoto
+REMOTE_BACKUP_DIR="/home/deployadmin/db_backups"
 
-# Archivo de backup con fecha y hora
-BACKUP_FILE="$BACKUP_DIR/backup_${DB_NAME}_$(date +%Y%m%d_%H%M%S).sql"
+# Archivo de backup remoto
+BACKUP_FILE="backup_${DB_NAME}_$(date +%Y%m%d_%H%M%S).sql"
 
-# Host de la DB (IP)
-DB_HOST="38.242.243.201"
+# Comando para crear carpeta en remoto (si no existe)
+sshpass -p 'MO4Vy692' ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} "mkdir -p ${REMOTE_BACKUP_DIR}"
 
-echo "📦 Respaldando base de datos '$DB_NAME' desde $DB_HOST..."
+# Comando para hacer el dump de la base de datos en remoto y guardarlo en la ruta que quieres
+sshpass -p 'MO4Vy692' ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} "PGPASSWORD='tu_password_postgres' pg_dump -U postgresuser $DB_NAME > ${REMOTE_BACKUP_DIR}/${BACKUP_FILE}"
 
-# Comando de backup (ajusta según tu configuración de postgres)
-PGPASSWORD="tu_password_de_postgres" pg_dump -h $DB_HOST -U postgresuser $DB_NAME > "$BACKUP_FILE"
-
+# Validar resultado
 if [ $? -eq 0 ]; then
-  echo "✅ Backup exitoso: $BACKUP_FILE"
+  echo "✅ Backup remoto exitoso en ${REMOTE_BACKUP_DIR}/${BACKUP_FILE}"
 else
-  echo "❌ Error durante el backup"
+  echo "❌ Error durante el backup remoto"
   exit 1
 fi
