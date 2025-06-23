@@ -25,7 +25,7 @@ BACKUP_FILE="backup_${DB_NAME}_$(date +%Y%m%d_%H%M%S).sql"
 sshpass -p 'MO4Vy692' ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} "mkdir -p ${REMOTE_BACKUP_DIR}"
 
 # Comando para hacer el dump de la base de datos en remoto y guardarlo en la ruta que quieres
-sshpass -p 'MO4Vy692' ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} "PGPASSWORD='tu_password_postgres' pg_dump -U postgresuser $DB_NAME > ${REMOTE_BACKUP_DIR}/${BACKUP_FILE}"
+sshpass -p 'MO4Vy692' ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} "PGPASSWORD='deployAdmin' pg_dump -U postgresuser $DB_NAME > ${REMOTE_BACKUP_DIR}/${BACKUP_FILE}"
 
 # Validar resultado
 if [ $? -eq 0 ]; then
