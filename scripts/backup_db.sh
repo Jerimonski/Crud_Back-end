@@ -21,11 +21,11 @@ REMOTE_BACKUP_DIR="/home/deployadmin/db_backups"
 # Archivo de backup remoto
 BACKUP_FILE="backup_${DB_NAME}_$(date +%Y%m%d_%H%M%S).sql"
 
-# Comando para crear carpeta en remoto (si no existe)
+# Crear la carpeta de backups en el servidor remoto
 sshpass -p 'MO4Vy692' ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} "mkdir -p ${REMOTE_BACKUP_DIR}"
 
-# Comando para hacer el dump de la base de datos en remoto y guardarlo en la ruta que quieres
-sshpass -p 'MO4Vy692' ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} "PGPASSWORD='deployAdmin' pg_dump -U postgresuser $DB_NAME > ${REMOTE_BACKUP_DIR}/${BACKUP_FILE}"
+# Hacer el backup usando peer auth (requiere que el usuario del sistema sea postgresuser)
+sshpass -p 'MO4Vy692' ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} "sudo -u postgresuser pg_dump $DB_NAME > ${REMOTE_BACKUP_DIR}/${BACKUP_FILE}"
 
 # Validar resultado
 if [ $? -eq 0 ]; then
