@@ -14,7 +14,7 @@ fi
 
 REMOTE_HOST="38.242.243.201"
 DB_USER="postgresuser"
-DB_PASSWORD="postgresUser"  # ⚠️ No compartas este archivo si tiene esta info 🙈
+DB_PASSWORD="postgresUser"  
 
 BACKUP_DIR="/home/jenkins/db_backups"
 FILENAME="backup_${DB_NAME}_${DATE}.sql"
