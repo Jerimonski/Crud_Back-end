@@ -95,27 +95,22 @@ Usar un gestor de procesos: En lugar de ejecutar node src/index.js, usa un gesto
 
     Administrar las instancias de la aplicación (en caso de que necesites escalar).
 
-Para instalar PM2:
-
+Para instalar PM2 si no esta instalado:
     npm install pm2@latest -g
-
-Para iniciar la aplicación con PM2:
-
-    pm2 start src/index.js --name "taller1-api"
-
-Para detener
-pm2 stop "taller1-api"
-
-para reiniciar
-pm2 restart "taller1-api"
-
-para ver el estado
+    
+Comandos PM2
 pm2 list
+pm2 logs backend-dev
+pm2 status backend-dev
 
-Para asegurarte de que PM2 se reinicie automáticamente después de un reinicio del sistema, usa:
+Para reiniciar el proceso manualmente:
+pm2 restart backend-dev
 
-pm2 startup
-pm2 save
+Para detenerlo:
+pm2 stop backend-dev
+
+Para eliminarlo:
+pm2 delete backend-dev
 
 # Solución de problemas
 
