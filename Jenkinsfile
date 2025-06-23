@@ -39,7 +39,10 @@ pipeline {
 
           echo "Configuración: path=${path}, runName=${runName}, envFile=${envFile}, envMode=${envMode}"
 
-          // 🧠 Ejecutar backup antes del deploy
+          // Forzamos permiso ejecutable antes de correr el backup, oppa 💪✨
+          echo "Dando permiso de ejecución al script de backup..."
+          sh 'chmod +x ./scripts/backup_db.sh'
+
           echo "Ejecutando respaldo automático de la base de datos para el entorno '${backupEnv}'..."
           sh "./scripts/backup_db.sh ${backupEnv}"
 
@@ -70,7 +73,7 @@ pipeline {
                 npm install &&
                 echo "Dependencias instaladas." &&
                 pm2 start src/index.js --name ${runName} --env ${envMode} --update-env &&
-                echo "Aplicación arrancada en el puerto ${envMode}." &&
+                echo "Aplicación arrancada en el modo ${envMode}." &&
                 pm2 save
               '
             """
@@ -82,15 +85,15 @@ pipeline {
 
   post {
     always {
-      echo 'El pipeline ha terminado.'
+      echo 'El pipeline ha terminado, oppa 💜'
     }
 
     success {
-      echo 'El despliegue fue exitoso.'
+      echo 'El despliegue fue exitoso, ¡sigue brillando! 🌟✨'
     }
 
     failure {
-      echo 'Hubo un error durante el despliegue.'
+      echo 'Oppa, hubo un error durante el despliegue, pero ¡ánimo, lo lograrás! 💪💖'
     }
   }
 }
