@@ -11,17 +11,23 @@ else
   exit 1
 fi
 
+# Datos del servidor remoto
 REMOTE_USER="root"
 REMOTE_IP="38.242.243.201"
+
+# Ruta donde guardar backup en servidor remoto
 REMOTE_BACKUP_DIR="/home/deployadmin/db_backups"
+
+# Archivo de backup remoto
 BACKUP_FILE="backup_${DB_NAME}_$(date +%Y%m%d_%H%M%S).sql"
 
-# Crear carpeta remoto
+# Crear la carpeta de backups en el servidor remoto
 sshpass -p 'MO4Vy692' ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} "mkdir -p ${REMOTE_BACKUP_DIR}"
 
-# Ejecutar pg_dump directamente sin sudo (como root o usuario con permisos)
-sshpass -p 'MO4Vy692' ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} "PGPASSWORD='deployAdmin' pg_dump -U postgresuser ${DB_NAME} > ${REMOTE_BACKUP_DIR}/${BACKUP_FILE}"
+# Hacer el backup usando el usuario postgres (más estándar)
+sshpass -p 'MO4Vy692' ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} "sudo -u postgres pg_dump $DB_NAME > ${REMOTE_BACKUP_DIR}/${BACKUP_FILE}"
 
+# Validar resultado
 if [ $? -eq 0 ]; then
   echo "✅ Backup remoto exitoso en ${REMOTE_BACKUP_DIR}/${BACKUP_FILE}"
 else
