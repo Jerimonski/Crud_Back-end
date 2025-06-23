@@ -1,4 +1,4 @@
-const db = require("../database/connection")
+import db from '../database/connection.js';
 
 class UsuarioDao {
   async getAll() {
@@ -36,4 +36,4 @@ class UsuarioDao {
   }
 }
 
-module.exports = new UsuarioDao()
+export default new UsuarioDao();

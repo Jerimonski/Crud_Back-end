@@ -28,7 +28,13 @@ npm install --save-dev nodemon
 
 No olvides ejecutar también npm install si descargas el proyecto con un package.json ya creado, para que se instalen todas las dependencias.
 
-Iniciar el servidor:
+# Iniciar el servidor:
+En local apuntando a base de datos local
+npm start
+En desarrollo apuntando a la base de datos en el servidor
+npm start:dev
+Para prod usar el
+npm start:prod
 npx nodemon src/index.js
 
 # Pruebas con Postman

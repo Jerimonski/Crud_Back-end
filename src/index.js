@@ -1,55 +1,47 @@
-const express = require("express")
-const cors = require("cors")
-const usuarioRoutes = require("./routes/usuarioRoutes")
-const comentariosRouter = require("./routes/comentarios")
+import dotenv from "dotenv"
+import express from "express"
+import cors from "cors"
+import usuarioRoutes from "./routes/usuarioRoutes.js"
+import comentariosRouter from "./routes/comentarios.js"
 const app = express()
+const envFile =
+  process.env.NODE_ENV === "production" ? ".env.production" : ".env.development"
+const result = dotenv.config({ path: envFile, override: true })
 
-app.use(cors())
+if (result.error) {
+  console.warn(`No se pudo cargar el archivo de entorno ${envFile}`)
+} else {
+  console.log(`Archivo de entorno cargado: ${envFile}`)
+  console.log("Variables de entorno cargadas:")
+  console.log({
+    NODE_ENV: process.env.NODE_ENV,
+    PORT: process.env.PORT,
+    DB_USER: process.env.DB_USER,
+    DB_NAME: process.env.DB_NAME,
+    DB_HOST: process.env.DB_HOST,
+    CORS_ORIGIN: process.env.CORS_ORIGIN,
+  })
+}
+
 app.use(express.json())
 /*
-cañade un prefijo a la ruta
+carga las rutas
+ */
+
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  })
+)
+
+/*
+añade un prefijo a la ruta
  */
 app.use("/usuarios", usuarioRoutes)
 app.use("/comentarios", comentariosRouter)
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en puerto ${PORT}`)
 })
-
-//const express = require("express")
-//const cors = require("cors")
-//const app = express()
-//const port = 3000
-
-//let items = []
-
-//app.use(
-//  express.urlencoded({s
-//    extended: true,
-//  })
-//)
-
-//app.use(
-//  express.json({
-//    type: "*/*",
-//  })
-//)
-
-//app.use(cors())
-
-//app.get("/", (req, res) => {
-//  res.status(200).send({ data: items })
-//})
-
-//app.post("/", (req, res) => {
-//  const { description, value } = req.body
-//  const newItem = { description, value }
-//  items.push(newItem)
-//  console.log(req.body)
-//  res.status(200).send({ message: "Data received successfully" })
-//})
-
-//app.listen(port, () => {
-//  console.log(`is running in http://localhost:${port}`)
-//})
