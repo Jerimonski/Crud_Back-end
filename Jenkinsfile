@@ -31,6 +31,9 @@ pipeline {
         script {
           echo "Preparando despliegue para el entorno: ${params.DEPLOY_ENV}"
           
+          // 🌸 Ejecutar backup antes del despliegue
+          sh "./scripts/backup_db.sh ${params.DEPLOY_ENV == 'development' ? 'dev' : 'prod'}"
+
           def path = params.DEPLOY_ENV == 'development' ? '/home/deployadmin/backend-dev' : '/home/deployadmin/backend-prod'
           def runName = params.DEPLOY_ENV == 'development' ? 'backend-dev' : 'backend-prod'
           def envFile = params.DEPLOY_ENV == 'development' ? '.env.development' : '.env.production'
@@ -40,7 +43,6 @@ pipeline {
 
           withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-serverb', keyFileVariable: 'SSH_KEY')]) {
             sh """
-              # Conexión SSH al servidor
               echo 'Conectando al servidor y deteniendo cualquier proceso existente en PM2...'
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 pm2 delete ${runName} || true
@@ -49,11 +51,9 @@ pipeline {
                 exit 0
               '
 
-              # Copiar los archivos necesarios al servidor
               echo 'Copiando archivos al servidor...'
               scp -i \$SSH_KEY -r package.json package-lock.json sonar-project.properties src Jenkinsfile Readme.md ${envFile} deployadmin@38.242.243.201:${path}
 
-              # Verificar que el archivo .env se renombre correctamente
               echo 'Renombrando archivo de entorno...'
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 cd ${path} &&
@@ -62,7 +62,6 @@ pipeline {
                 cat .env
               '
 
-              # Realizar la instalación de dependencias y arrancar la aplicación
               echo 'Iniciando la aplicación en el servidor...'
               ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 cd ${path} &&
