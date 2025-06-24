@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-const express = require("express")
+import express from "express"
 const router = express.Router()
-const pool = require("../database/connection")
-
-=======
-import express from 'express';
-const router = express.Router();
-import pool from "../database/connection.js";
->>>>>>> a17cb312113f304b816a1942d7fd8f28b9eff55d
+import pool from "../database/connection.js"
 
 router.get("/", async (req, res) => {
   try {
@@ -38,8 +31,4 @@ router.post("/", async (req, res) => {
   }
 })
 
-<<<<<<< HEAD
-module.exports = router
-=======
-export default router;
->>>>>>> a17cb312113f304b816a1942d7fd8f28b9eff55d
+export default router
