@@ -44,4 +44,5 @@ app.use("/comentarios", comentariosRouter)
 const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en puerto ${PORT}`)
+  console.log("CLAVE SECRETA JWT:", process.env.JWT_SECRET)
 })

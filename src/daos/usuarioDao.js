@@ -1,4 +1,4 @@
-import db from '../database/connection.js';
+import db from "../database/connection.js"
 
 class UsuarioDao {
   async getAll() {
@@ -34,6 +34,13 @@ class UsuarioDao {
   async delete(id) {
     await db.query("DELETE FROM usuario WHERE id = $1", [id])
   }
+
+  async findByEmail(email) {
+    const result = await db.query("SELECT * FROM usuario WHERE email = $1", [
+      email,
+    ])
+    return result.rows[0]
+  }
 }
 
-export default new UsuarioDao();
+export default new UsuarioDao()
