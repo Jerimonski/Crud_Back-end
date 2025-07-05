@@ -33,6 +33,7 @@ class UsuarioService {
       id: usuario.id,
       email: usuario.email,
       nombre: usuario.nombre,
+      rol: usuario.rol,
     }
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
