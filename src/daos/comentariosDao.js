@@ -27,8 +27,8 @@ class ComentariosDao {
         comentario.usuario_id,
         comentario.deporte_id,
         comentario.contenido,
-        comentario.puntaje || 5,
-        comentario.fecha || new Date(),
+        comentario.puntaje,
+        comentario.fecha,
       ]
     )
     return result.rows[0]
