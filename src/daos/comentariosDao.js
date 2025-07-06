@@ -3,10 +3,10 @@ import db from "../database/connection.js"
 class ComentariosDao {
   async getAll() {
     const result = await db.query(`
-      SELECT c.id, u.nombre, c.contenido, c.fecha_publicacion
+      SELECT c.id, u.nombre, c.contenido, c.fecha
       FROM comentarios c
       JOIN usuario u ON c.usuario_id = u.id
-      ORDER BY c.fecha_publicacion DESC
+      ORDER BY c.fecha DESC
     `)
     return result.rows
   }
