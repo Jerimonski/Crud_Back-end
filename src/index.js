@@ -2,7 +2,8 @@ import dotenv from "dotenv"
 import express from "express"
 import cors from "cors"
 import usuarioRoutes from "./routes/usuarioRoutes.js"
-import comentariosRouter from "./routes/comentarios.js"
+import comentariosRouter from "./routes/comentariosRouter.js"
+
 const app = express()
 const envFile =
   process.env.NODE_ENV === "production" ? ".env.production" : ".env.development"
