@@ -16,6 +16,7 @@ class comentariosController {
   async create(req, res) {
     try {
       const dto = new comentariosDto(req.body)
+      console.log("DTO recibido:", dto)
       const nuevoComentario = await comentariosService.create(dto)
       res.status(201).json(nuevoComentario)
     } catch (error) {
