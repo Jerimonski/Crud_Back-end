@@ -5,10 +5,11 @@ class comentariosController {
   async getAll(req, res) {
     try {
       const comentarios = await comentariosService.getAll()
+      console.log("Comentarios obtenidos:", comentarios)
       res.json(comentarios)
     } catch (error) {
       console.error("Error al obtener comentarios:", error)
-      res.status(500).json({ mensaje: "Error interno del servidor" })
+      res.status(500).json({ error: "Error al obtener comentarios" })
     }
   }
 
