@@ -8,6 +8,7 @@ class ComentarioService {
   create(dto) {
     return comentariosDao.create(dto)
   }
+
   async getByDeporte(deporte) {
     return await comentariosDao.findByDeporte(deporte)
   }
