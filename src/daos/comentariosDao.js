@@ -20,10 +20,16 @@ class ComentariosDao {
 
   async create(comentario) {
     const result = await db.query(
-      `INSERT INTO comentarios (usuario_id, contenido)
-       VALUES ($1, $2)
-       RETURNING *`,
-      [comentario.usuario_id, comentario.contenido]
+      `INSERT INTO comentarios (usuario_id, deporte_id, contenido, puntaje, fecha)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING *`,
+      [
+        comentario.usuario_id,
+        comentario.deporte_id,
+        comentario.contenido,
+        comentario.puntaje || 5,
+        comentario.fecha || new Date(),
+      ]
     )
     return result.rows[0]
   }

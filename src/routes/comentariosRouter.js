@@ -5,6 +5,6 @@ const router = express.Router()
 
 router.get("/", comentariosController.getAll)
 router.post("/", comentariosController.create)
-router.get("/", comentariosController.getByDeporte)
+router.get("/deporte", comentariosController.getByDeporte)
 
 export default router
