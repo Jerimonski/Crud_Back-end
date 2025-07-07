@@ -1,12 +1,12 @@
 import { Router } from "express"
-import DeporteController from "../controllers/deporteController.js"
+import DeportesController from "../controllers/deportesController.js"
 
 const router = Router()
 
-router.get("/", DeporteController.getAll)
-router.get("/:id", DeporteController.getById)
-router.post("/", DeporteController.create)
-router.put("/:id", DeporteController.update)
-router.delete("/:id", DeporteController.delete)
+router.get("/", DeportesController.getAll)
+router.get("/:id", DeportesController.getById)
+router.post("/", DeportesController.create)
+router.put("/:id", DeportesController.update)
+router.delete("/:id", DeportesController.delete)
 
 export default router

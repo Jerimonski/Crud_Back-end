@@ -1,4 +1,4 @@
-class DeporteDto {
+class DeportesDto {
   constructor({ nombre, descripcion, entrenador }) {
     this.nombre = nombre
     this.descripcion = descripcion
@@ -6,4 +6,4 @@ class DeporteDto {
   }
 }
 
-export default DeporteDto
+export default DeportesDto

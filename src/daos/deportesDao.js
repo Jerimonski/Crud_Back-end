@@ -1,7 +1,6 @@
-import db from "../database/connection"
-import DeporteDto from "./../dtos/deporteDto"
+import db from "../database/connection.js"
 
-class DeporteDao {
+class DeportesDao {
   async getAll() {
     const result = await db.query("SELECT * FROM deportes")
     return result.rows
@@ -38,4 +37,4 @@ class DeporteDao {
   }
 }
 
-export default new DeporteDao()
+export default new DeportesDao()

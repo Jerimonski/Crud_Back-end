@@ -3,6 +3,7 @@ import express from "express"
 import cors from "cors"
 import usuarioRoutes from "./routes/usuarioRoutes.js"
 import comentariosRouter from "./routes/comentariosRouter.js"
+import deportesRouter from "./routes/deportesRoutes.js"
 
 const app = express()
 const envFile =
@@ -41,6 +42,7 @@ añade un prefijo a la ruta
  */
 app.use("/usuarios", usuarioRoutes)
 app.use("/comentarios", comentariosRouter)
+app.use("/deportes", deportesRouter)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
