@@ -17,7 +17,6 @@ class comentariosController {
     try {
       console.log("Body recibido:", req.body)
       const dto = new comentariosDto(req.body)
-      console.log("DTO construido AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:", dto)
       const nuevoComentario = await comentariosService.create(dto)
       res.status(201).json(nuevoComentario)
     } catch (error) {
