@@ -1,6 +1,6 @@
-import express from "express";
-const router = express.Router();
-import pool from "../database/connection.js";
+import express from "express"
+const router = express.Router()
+import pool from "../database/connection.js"
 
 router.get("/", async (req, res) => {
   try {
@@ -9,26 +9,26 @@ router.get("/", async (req, res) => {
       FROM comentarios c
       JOIN usuario u ON c.usuario_id = u.id
       ORDER BY c.id DESC
-    `);
-    res.json(result.rows);
+    `)
+    res.json(result.rows)
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al obtener comentarios" });
+    console.error(error)
+    res.status(500).json({ error: "Error al obtener comentarios" })
   }
-});
+})
 
 router.post("/", async (req, res) => {
-  const { usuario_id, contenido, valoracion } = req.body;
+  const { usuario_id, contenido, valoracion } = req.body
   try {
     await pool.query(
       "INSERT INTO comentarios (usuario_id, contenido, valoracion) VALUES ($1, $2, $3)",
       [usuario_id, contenido, valoracion]
-    );
-    res.status(201).json({ message: "Comentario guardado" });
+    )
+    res.status(201).json({ message: "Comentario guardado" })
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al guardar comentario" });
+    console.error(error)
+    res.status(500).json({ error: "Error al guardar comentario" })
   }
-});
+})
 
-export default router;
+export default router
