@@ -37,9 +37,15 @@ class ComentariosDao {
   async delete(id) {
     await db.query(`DELETE FROM comentarios WHERE id = $1`, [id])
   }
-  async findByDeporte(deporte) {
-    const sql = "SELECT * FROM comentarios WHERE deporte_id = $1"
-    const values = [deporte]
+  async findByDeporte(deporteId) {
+    const sql = `
+            SELECT c.id, u.nombre, c.contenido, c.fecha,
+            c.deporte_id, c.valoracion FROM comentarios c
+            JOIN usuario u ON c.usuario_id = u.id
+            WHERE c.deporte_id = $1 
+            ORDER BY c.fecha DESC; 
+        `
+    const values = [deporteId]
     const result = await db.query(sql, values)
     return result.rows
   }

@@ -35,6 +35,7 @@ class DeportesDao {
   async delete(id) {
     await db.query("DELETE FROM deportes WHERE id = $1", [id])
   }
+
   async getByNombre(nombre) {
     const result = await db.query(
       "SELECT * FROM deportes WHERE LOWER(nombre) = LOWER($1) LIMIT 1",
