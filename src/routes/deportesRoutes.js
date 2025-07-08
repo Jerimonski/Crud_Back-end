@@ -8,5 +8,6 @@ router.get("/:id", DeportesController.getById)
 router.post("/", DeportesController.create)
 router.put("/:id", DeportesController.update)
 router.delete("/:id", DeportesController.delete)
+router.get("/nombre/:nombre", DeportesController.getByNombre)
 
 export default router
