@@ -27,8 +27,17 @@ class comentariosController {
   async getByDeporte(req, res) {
     try {
       const { deporte } = req.query
-      const comentarios = await comentariosService.getByDeporte(deporte)
+      const deporteIdNumerico = parseInt(deporte, 10)
+      const comentarios = await comentariosService.getByDeporte(
+        deporteIdNumerico
+      )
       res.json(comentarios)
+
+      if (isNaN(deporteIdNumerico)) {
+        return res
+          .status(400)
+          .json({ mensaje: "ID de deporte inválido. Debe ser un número." })
+      }
     } catch (error) {
       console.error("Error al obtener comentarios por deporte:", error)
       res.status(500).json({ mensaje: "Error interno del servidor" })
