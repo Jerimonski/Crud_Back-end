@@ -34,7 +34,7 @@ pipeline {
           echo "Dando permiso de ejecución al script de backup..."
           sh 'chmod +x ./scripts/backup_db.sh'
 
-          withCredentials([string(credentialsId: 'gitea-token', variable: 'GITEA_TOKEN')]) {
+          withCredentials([string(credentialsId: 'backup-token-BookMyFit', variable: 'GITEA_TOKEN')]) {
             echo "Realizando respaldo de base de datos y subiéndolo a Gitea..."
             sh "GITEA_TOKEN=$GITEA_TOKEN ./scripts/backup_db.sh ${backupEnv}"
           }
