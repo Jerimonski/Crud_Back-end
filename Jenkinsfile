@@ -1,8 +1,8 @@
 pipeline {
   agent any
 
-  environment {
-    DEPLOY_ENV = "${params.DEPLOY_ENV ?: 'development'}"
+  parameters {
+    choice(name: 'DEPLOY_ENV', choices: ['development', 'production'], description: 'Elige el entorno de despliegue')
   }
 
   stages {
@@ -18,7 +18,7 @@ pipeline {
       steps {
         echo 'Iniciando análisis en SonarQube...'
         withSonarQubeEnv('SonarQubeCommunity') {
-          withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+          withCredentials([string(credentialsId: 'sonar-token-back', variable: 'SONAR_TOKEN')]) {
             sh 'npx sonar-scanner -Dsonar.token=$SONAR_TOKEN'
           }
         }
@@ -29,10 +29,14 @@ pipeline {
     stage('Backup DB (solo Gitea)') {
       steps {
         script {
-          withCredentials([string(credentialsId: 'backup-token-BookMyFit', variable: 'GITEA_TOKEN')]) {
+          def backupEnv = params.DEPLOY_ENV == 'development' ? 'dev' : 'prod'
+
+          echo "Dando permiso de ejecución al script de backup..."
+          sh 'chmod +x ./scripts/backup_db.sh'
+
+          withCredentials([string(credentialsId: 'gitea-token', variable: 'GITEA_TOKEN')]) {
             echo "Realizando respaldo de base de datos y subiéndolo a Gitea..."
-            sh 'chmod +x ./scripts/backup_db.sh'
-            sh "GITEA_TOKEN=$GITEA_TOKEN ./scripts/backup_db.sh ${DEPLOY_ENV == 'production' ? 'prod' : 'dev'}"
+            sh "GITEA_TOKEN=$GITEA_TOKEN ./scripts/backup_db.sh ${backupEnv}"
           }
         }
       }
@@ -41,29 +45,38 @@ pipeline {
     stage('Deploy') {
       steps {
         script {
-          def path = DEPLOY_ENV == 'production' ? '/home/deployadmin/backend-prod' : '/home/deployadmin/backend-dev'
-          def runName = DEPLOY_ENV == 'production' ? 'backend-prod' : 'backend-dev'
-          def envFile = DEPLOY_ENV == 'production' ? '.env.production' : '.env.development'
-          def envMode = DEPLOY_ENV == 'production' ? 'production' : 'development'
+          echo "Preparando despliegue para el entorno: ${params.DEPLOY_ENV}"
+          
+          def path = params.DEPLOY_ENV == 'development' ? '/home/deployadmin/backend-dev' : '/home/deployadmin/backend-prod'
+          def runName = params.DEPLOY_ENV == 'development' ? 'backend-dev' : 'backend-prod'
+          def envFile = params.DEPLOY_ENV == 'development' ? '.env.development' : '.env.production'
+          def envMode = params.DEPLOY_ENV == 'development' ? 'development' : 'production'
 
-          withCredentials([sshUserPrivateKey(credentialsId: 'ssh-credential-id-serverb', keyFileVariable: 'SSH_KEY')]) {
+          echo "Configuración: path=${path}, runName=${runName}, envFile=${envFile}, envMode=${envMode}"
+
+          withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-serverb', keyFileVariable: 'SSH_KEY')]) {
             sh """
-              echo Conectando al servidor y deteniendo proceso en PM2...
-              ssh -i $SSH_KEY deployadmin@38.242.243.201 '
+              echo 'Conectando al servidor y deteniendo cualquier proceso existente en PM2...'
+              ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 pm2 delete ${runName} || true
-                rm -rf ${path}/* || true
+                echo 'Proceso PM2 detenido, limpiando directorio de despliegue...'
+                rm -rf ${path}/*
+                exit 0
               '
-              echo Copiando archivos al servidor...
-              scp -i $SSH_KEY -r package.json package-lock.json sonar-project.properties src Jenkinsfile Readme.md ${envFile} deployadmin@38.242.243.201:${path}
-              echo Renombrando archivo de entorno...
-              ssh -i $SSH_KEY deployadmin@38.242.243.201 '
+
+              echo 'Copiando archivos al servidor...'
+              scp -i \$SSH_KEY -r package.json package-lock.json sonar-project.properties src Jenkinsfile Readme.md ${envFile} deployadmin@38.242.243.201:${path}
+
+              echo 'Renombrando archivo de entorno...'
+              ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 cd ${path} &&
                 mv ${envFile} .env &&
                 echo "Archivo ${envFile} renombrado a .env." &&
                 cat .env
               '
-              echo Iniciando la aplicación en el servidor...
-              ssh -i $SSH_KEY deployadmin@38.242.243.201 '
+
+              echo 'Iniciando la aplicación en el servidor...'
+              ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
                 cd ${path} &&
                 npm install &&
                 echo "Dependencias instaladas." &&
@@ -80,13 +93,15 @@ pipeline {
 
   post {
     always {
-      echo 'El pipeline ha terminado'
+      echo 'El pipeline ha terminado, oppa 💜'
     }
+
     success {
-      echo '✨ El despliegue fue exitoso ✨'
+      echo 'El despliegue fue exitoso, ¡sigue brillando! 🌟✨'
     }
+
     failure {
-      echo 'algo falló pero no te rindas, oppaa~ ¡tú puedes! 💪🍀'
+      echo 'Oppa, hubo un error durante el despliegue, pero ¡ánimo, lo lograrás! 💪💖'
     }
   }
 }
