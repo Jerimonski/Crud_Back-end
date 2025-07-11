@@ -1,91 +1,38 @@
-pipeline {
-  agent any
+#!/bin/bash
 
-  parameters {
-    choice(name: 'DEPLOY_ENV', choices: ['development', 'production'], description: 'Elige el entorno de despliegue')
-  }
+set -e
 
-  stages {
-    stage('Instalar dependencias') {
-      steps {
-        echo 'Instalando dependencias...'
-        sh 'npm install'
-        echo 'Dependencias instaladas correctamente.'
-      }
-    }
+ENV=$1
 
-    stage('SonarQube Analysis') {
-      steps {
-        echo 'Iniciando análisis en SonarQube...'
-        withSonarQubeEnv('SonarQubeCommunity') {
-          withCredentials([string(credentialsId: 'sonar-token-back', variable: 'SONAR_TOKEN')]) {
-            sh 'npx sonar-scanner -Dsonar.token=$SONAR_TOKEN'
-          }
-        }
-        echo 'Análisis de SonarQube completado.'
-      }
-    }
+if [ "$ENV" == "dev" ]; then
+  DB_NAME="taller01_dev"
+  BRANCH="dev"
+elif [ "$ENV" == "prod" ]; then
+  DB_NAME="taller01_prod"
+  BRANCH="prod"
+else
+  echo "⚠️ Entorno no válido. Usa 'dev' o 'prod'."
+  exit 1
+fi
 
-    stage('Backup DB (solo Gitea)') {
-      steps {
-        script {
-          def backupEnv = params.DEPLOY_ENV == 'development' ? 'dev' : 'prod'
+DATE=$(date +"%Y%m%d_%H%M%S")
+BACKUP_FILE="backup_${DB_NAME}_${DATE}.sql"
 
-          withCredentials([
-            string(credentialsId: 'backup-token-BookMyFit', variable: 'GITEA_TOKEN')
-          ]) {
-            echo "Realizando respaldo de base de datos y subiéndolo a Gitea..."
-            sh 'chmod +x ./scripts/backup_db.sh'
-            sh "GITEA_TOKEN=$GITEA_TOKEN ./scripts/backup_db.sh ${backupEnv}"
-          }
-        }
-      }
-    }
+# Crear dump local
+pg_dump -h 38.242.243.201 -p 5432 -U postgresuser -d $DB_NAME > $BACKUP_FILE
+echo "📦 Backup generado: $BACKUP_FILE"
 
-    stage('Deploy') {
-      steps {
-        script {
-          def path = params.DEPLOY_ENV == 'development' ? '/home/deployadmin/backend-dev' : '/home/deployadmin/backend-prod'
-          def runName = params.DEPLOY_ENV == 'development' ? 'backend-dev' : 'backend-prod'
-          def envFile = params.DEPLOY_ENV == 'development' ? '.env.development' : '.env.production'
-          def envMode = params.DEPLOY_ENV == 'development' ? 'development' : 'production'
+# Clonar repo de backup
+git clone https://oauth2:$GITEA_TOKEN@194.163.140.23:3000/lacomarcaja/BD_BookMyFit.git
+cd BD_BookMyFit
 
-          withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-serverb', keyFileVariable: 'SSH_KEY')]) {
-            sh """
-              echo 'Conectando al servidor y deteniendo proceso en PM2...'
-              ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
-                pm2 delete ${runName} || true
-                rm -rf ${path}/*
-              '
+mkdir -p $BRANCH
+mv ../$BACKUP_FILE $BRANCH/
 
-              echo 'Copiando archivos al servidor...'
-              scp -i \$SSH_KEY -r package.json package-lock.json sonar-project.properties src Jenkinsfile Readme.md ${envFile} deployadmin@38.242.243.201:${path}
+git config user.email "jenkins@bookmyfit.local"
+git config user.name "Jenkins CI"
+git add $BRANCH/$BACKUP_FILE
+git commit -m "Respaldo automático $ENV - $DATE"
+git push origin main
 
-              ssh -i \$SSH_KEY deployadmin@38.242.243.201 '
-                cd ${path} &&
-                mv ${envFile} .env &&
-                npm install &&
-                pm2 start src/index.js --name ${runName} --env ${envMode} --update-env &&
-                pm2 save
-              '
-            """
-          }
-        }
-      }
-    }
-  }
-
-  post {
-    always {
-      echo 'El pipeline ha terminado'
-    }
-
-    success {
-      echo 'El despliegue fue exitoso'
-    }
-
-    failure {
-      echo 'algo falló pero no te rindas'
-    }
-  }
-}
+echo "✅ Backup subido al repositorio BD_BookMyFit/$BRANCH"
