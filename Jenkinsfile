@@ -26,7 +26,7 @@ pipeline {
       }
     }
 
-    stage('Deploy') {
+    stage('Backup DB y Deploy') {
       steps {
         script {
           echo "Preparando despliegue para el entorno: ${params.DEPLOY_ENV}"
@@ -39,12 +39,15 @@ pipeline {
 
           echo "Configuración: path=${path}, runName=${runName}, envFile=${envFile}, envMode=${envMode}"
 
-          // Forzamos permiso ejecutable antes de correr el backup, oppa 💪✨
-          echo "Dando permiso de ejecución al script de backup..."
-          sh 'chmod +x ./scripts/backup_db.sh'
+          withCredentials([
+            string(credentialsId: 'backup-token-BookMyFit', variable: 'GITEA_TOKEN')
+          ]) {
+            echo "Dando permiso de ejecución al script de backup..."
+            sh 'chmod +x ./scripts/backup_db.sh'
 
-          echo "Ejecutando respaldo automático de la base de datos para el entorno '${backupEnv}'..."
-          sh "./scripts/backup_db.sh ${backupEnv}"
+            echo "Ejecutando respaldo automático de la base de datos para el entorno '${backupEnv}'..."
+            sh "GITEA_TOKEN=$GITEA_TOKEN ./scripts/backup_db.sh ${backupEnv}"
+          }
 
           withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-serverb', keyFileVariable: 'SSH_KEY')]) {
             sh """
@@ -85,15 +88,15 @@ pipeline {
 
   post {
     always {
-      echo 'El pipeline ha terminado, oppa 💜'
+      echo 'El pipeline ha terminado'
     }
 
     success {
-      echo 'El despliegue fue exitoso, ¡sigue brillando! 🌟✨'
+      echo 'El despliegue fue exitoso'
     }
 
     failure {
-      echo 'Oppa, hubo un error durante el despliegue, pero ¡ánimo, lo lograrás! 💪💖'
+      echo 'hubo un error durante el despliegue'
     }
   }
 }
