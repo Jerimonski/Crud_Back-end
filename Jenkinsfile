@@ -26,6 +26,22 @@ pipeline {
       }
     }
 
+    stage('Backup DB (solo Gitea)') {
+      steps {
+        script {
+          def backupEnv = params.DEPLOY_ENV == 'development' ? 'dev' : 'prod'
+
+          echo "Dando permiso de ejecución al script de backup..."
+          sh 'chmod +x ./scripts/backup_db.sh'
+
+          withCredentials([string(credentialsId: 'backup-token-BookMyFit', variable: 'GITEA_TOKEN')]) {
+            echo "Realizando respaldo de base de datos y subiéndolo a Gitea..."
+            sh "GITEA_TOKEN=$GITEA_TOKEN ./scripts/backup_db.sh ${backupEnv}"
+          }
+        }
+      }
+    }
+
     stage('Deploy') {
       steps {
         script {
@@ -35,16 +51,8 @@ pipeline {
           def runName = params.DEPLOY_ENV == 'development' ? 'backend-dev' : 'backend-prod'
           def envFile = params.DEPLOY_ENV == 'development' ? '.env.development' : '.env.production'
           def envMode = params.DEPLOY_ENV == 'development' ? 'development' : 'production'
-          def backupEnv = params.DEPLOY_ENV == 'development' ? 'dev' : 'prod'
 
           echo "Configuración: path=${path}, runName=${runName}, envFile=${envFile}, envMode=${envMode}"
-
-          // Forzamos permiso ejecutable antes de correr el backup, oppa 💪✨
-          echo "Dando permiso de ejecución al script de backup..."
-          sh 'chmod +x ./scripts/backup_db.sh'
-
-          echo "Ejecutando respaldo automático de la base de datos para el entorno '${backupEnv}'..."
-          sh "./scripts/backup_db.sh ${backupEnv}"
 
           withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-serverb', keyFileVariable: 'SSH_KEY')]) {
             sh """
