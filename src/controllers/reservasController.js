@@ -1,6 +1,5 @@
 import reservasServices from "../services/reservasServices.js"
-import reservasDto from "../dtos/reservasDto.js"
-import reservasDto from "./../dtos/reservasDto"
+import reservasDto from "./../dtos/reservasDto.js"
 
 class ReservasController {
   async create(req, res) {
@@ -30,7 +29,7 @@ class ReservasController {
           .json({ mensaje: "El estado de la reserva es requerido." })
       }
 
-      const dto = new ReservasDto({
+      const dto = new reservasDto({
         usuario_id: parsedUsuarioId,
         deporte_id: parsedDeporteId,
         horario_id: parsedUsuarioId,
@@ -38,7 +37,7 @@ class ReservasController {
         estado,
       })
 
-      const nuevaReserva = await ReservasService.create(dto)
+      const nuevaReserva = await reservasServices.create(dto)
       res.status(201).json(nuevaReserva)
     } catch (error) {
       console.error("Error al crear reserva:", error)
@@ -53,7 +52,7 @@ class ReservasController {
 
   async getAll(req, res) {
     try {
-      const reservas = await ReservasService.getAll()
+      const reservas = await reservasServices.getAll()
       res.json(reservas)
     } catch (error) {
       console.error("Error al obtener todas las reservas:", error)
