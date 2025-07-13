@@ -32,7 +32,7 @@ class ReservasController {
       const dto = new reservasDto({
         usuario_id: parsedUsuarioId,
         deporte_id: parsedDeporteId,
-        horario_id: parsedUsuarioId,
+        horario_id: parsedHorarioId,
         fecha,
         estado,
       })
