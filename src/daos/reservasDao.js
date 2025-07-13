@@ -40,13 +40,12 @@ class reservasDao {
     const query = `SELECT
     r.id AS reserva_id,
     u.nombre AS usuario_nombre,
-    u.email AS usuario_email, -- Podrías querer el email también
+    u.email AS usuario_email,
     d.nombre AS deporte_nombre,
     h.hora_inicio,
     h.hora_fin,
     r.fecha,
-    r.estado,
-    r.created_at -- O cualquier otra columna relevante de la reserva
+    r.estado
 FROM
     public.reservas r
 JOIN

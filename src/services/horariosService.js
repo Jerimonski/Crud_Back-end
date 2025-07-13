@@ -1,12 +1,16 @@
 import horariosDao from "../daos/horariosDao.js"
 
 class HorariosService {
-  async getAvailableHorarios(deporteId, fecha, diaSemana) {
-    return await horariosDao.findAvailableByDeporteAndFecha(
-      deporteId,
-      fecha,
-      diaSemana
-    )
+  async create(horarioDto) {
+    return await horariosDao.create(horarioDto)
+  }
+
+  async getScheduledHorariosByDeporte(deporteId) {
+    return await horariosDao.findScheduledByDeporteId(deporteId)
+  }
+
+  async getAllBaseHorarios() {
+    return await horariosDao.findAllBaseHorarios()
   }
 }
 

@@ -1,35 +1,70 @@
-import horariosDto from "./../dtos/horariosDto.js"
-import horarioService from "./../services/horariosService.js"
+import HorariosService from "./../services/horariosService.js"
 
 class HorariosController {
   async getAvailable(req, res) {
     try {
-      const { deporteId, fecha, diaSemana } = req.query
+      const { deporteId } = req.query
+
       const parsedDeporteId = parseInt(deporteId, 10)
       if (isNaN(parsedDeporteId)) {
         return res
           .status(400)
           .json({ mensaje: "ID de deporte inválido. Debe ser un número." })
       }
-      if (!fecha) {
-        return res.status(400).json({ mensaje: "La fecha es requerida" })
-      }
-      if (!diaSemana) {
-        return res
-          .status(400)
-          .json({ mensaje: "El día de la semana es requerido." })
-      }
-      const horarios = await horarioService.getAvailableHorarios(
-        parsedDeporteId,
-        fecha,
-        diaSemana
-      )
-      res.json(horarios)
+
+      const horariosAgendados =
+        await HorariosService.getScheduledHorariosByDeporte(parsedDeporteId)
+      res.json(horariosAgendados)
     } catch (error) {
-      console.error("Error al obtener horarios disponibles:", error)
+      console.error("Error al obtener horarios agendados por deporte:", error)
+      res.status(500).json({
+        mensaje: "Error interno del servidor al obtener horarios agendados.",
+      })
+    }
+  }
+
+  // AÑADIDO: Nuevo método para obtener todos los horarios base
+  async getAllBase(req, res) {
+    try {
+      const baseHorarios = await HorariosService.getAllBaseHorarios()
+      res.json(baseHorarios)
+    } catch (error) {
+      console.error("Error al obtener todos los horarios base:", error)
       res
         .status(500)
-        .json({ mensaje: "Error interno del servidor al obtener horarios." })
+        .json({
+          mensaje: "Error interno del servidor al obtener horarios base.",
+        })
+    }
+  }
+
+  async create(req, res) {
+    try {
+      const { dia_semana, hora_inicio, hora_fin, disponible } = req.body
+
+      if (
+        !dia_semana ||
+        !hora_inicio ||
+        !hora_fin ||
+        typeof disponible !== "boolean"
+      ) {
+        return res
+          .status(400)
+          .json({ mensaje: "Faltan campos obligatorios o son inválidos." })
+      }
+      const nuevoHorario = await HorariosService.create({
+        dia_semana,
+        hora_inicio,
+        hora_fin,
+        disponible,
+      })
+
+      res.status(201).json(nuevoHorario)
+    } catch (error) {
+      console.error("Error al crear horario:", error)
+      res
+        .status(500)
+        .json({ mensaje: "Error interno del servidor al crear el horario." })
     }
   }
 }
