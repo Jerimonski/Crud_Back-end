@@ -2,8 +2,10 @@ import dotenv from "dotenv"
 import express from "express"
 import cors from "cors"
 import usuarioRoutes from "./routes/usuarioRoutes.js"
-import comentariosRouter from "./routes/comentariosRouter.js"
-import deportesRouter from "./routes/deportesRoutes.js"
+import comentariosRoutes from "./routes/comentariosRoutes.js"
+import deportesRoutes from "./routes/deportesRoutes.js"
+import reservasRoutes from "./routes/reservasRoutes.js"
+import horariosRoutes from "./routes/horariosRoutes.js"
 
 const app = express()
 const envFile =
@@ -41,12 +43,12 @@ app.use(
 añade un prefijo a la ruta
  */
 app.use("/usuarios", usuarioRoutes)
-app.use("/comentarios", comentariosRouter)
-app.use("/deportes", deportesRouter)
+app.use("/comentarios", comentariosRoutes)
+app.use("/deportes", deportesRoutes)
+app.use("/reservas", reservasRoutes)
+app.use("/horarios", horariosRoutes)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en puerto ${PORT}`)
 })
-
-/*hola papaito*/
