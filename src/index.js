@@ -6,6 +6,7 @@ import comentariosRoutes from "./routes/comentariosRoutes.js"
 import deportesRoutes from "./routes/deportesRoutes.js"
 import reservasRoutes from "./routes/reservasRoutes.js"
 import horariosRoutes from "./routes/horariosRoutes.js"
+import reporteRoutes from "./routes/reporteRoutes.js"
 
 const app = express()
 const envFile =
@@ -47,6 +48,7 @@ app.use("/comentarios", comentariosRoutes)
 app.use("/deportes", deportesRoutes)
 app.use("/reservas", reservasRoutes)
 app.use("/horarios", horariosRoutes)
+app.use("/admin", reporteRoutes)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
