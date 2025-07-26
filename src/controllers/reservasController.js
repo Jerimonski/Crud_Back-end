@@ -42,7 +42,7 @@ class ReservasController {
     } catch (error) {
       console.error("Error al crear reserva:", error)
       if (error.message.includes("El horario seleccionado ya está reservado")) {
-        return res.status(409).jsonn({ mensaje: error.message })
+        return res.status(409).json({ mensaje: error.message })
       }
       res
         .status(500)
@@ -86,6 +86,43 @@ class ReservasController {
       res
         .status(500)
         .json({ mensaje: "Error interno del servidor al eliminar la reserva." })
+    }
+  }
+
+  async updateEstado(req, res) {
+    try {
+      const reservaId = parseInt(req.params.id, 10)
+      const { estado, motivo_falta } = req.body
+
+      if (isNaN(reservaId)) {
+        return res.status(400).json({ mensaje: "ID de reserva inválido." })
+      }
+      if (!estado) {
+        return res.status(400).json({ mensaje: "El estado es requerido." })
+      }
+
+      const reservaActualizada = await reservasServices.updateEstadoReserva(
+        reservaId,
+        estado,
+        motivo_falta
+      )
+
+      res.json(reservaActualizada)
+    } catch (error) {
+      console.error("Error al actualizar el estado de la reserva:", error)
+      if (
+        error.message.includes("ID de reserva inválido") ||
+        error.message.includes("El estado es requerido")
+      ) {
+        return res.status(400).json({ mensaje: error.message })
+      }
+      if (error.message.includes("Reserva no encontrada")) {
+        return res.status(404).json({ mensaje: error.message })
+      }
+      res.status(500).json({
+        mensaje:
+          "Error interno del servidor al actualizar el estado de la reserva.",
+      })
     }
   }
 }

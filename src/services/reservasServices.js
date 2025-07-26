@@ -23,6 +23,27 @@ class reservasService {
   async delete(reservasId) {
     return await reservasDao.delete(reservasId)
   }
+
+  async updateEstadoReserva(reservaId, estado, motivoFalta) {
+    if (!reservaId || isNaN(parseInt(reservaId, 10))) {
+      throw new Error("ID de reserva inválido.")
+    }
+    if (!estado) {
+      throw new Error("El estado de la reserva es requerido.")
+    }
+
+    const motivoFinal = estado === "Faltó" ? motivoFalta : null
+
+    const reservaActualizada = await reservasDao.updateEstado(
+      reservaId,
+      estado,
+      motivoFinal
+    )
+    if (!reservaActualizada) {
+      throw new Error("Reserva no encontrada para actualizar estado.")
+    }
+    return reservaActualizada
+  }
 }
 
 export default new reservasService()

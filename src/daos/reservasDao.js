@@ -3,8 +3,8 @@ import db from "../database/connection.js"
 class reservasDao {
   async create(reserva) {
     const query = `
-      INSERT INTO public.reservas (usuario_id, deporte_id, horario_id, fecha, estado)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO public.reservas (usuario_id, deporte_id, horario_id, fecha, estado, motivo_falta)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *;`
     const values = [
       reserva.usuario_id,
@@ -12,6 +12,7 @@ class reservasDao {
       reserva.horario_id,
       reserva.fecha,
       reserva.estado,
+      reserva.motivo_falta,
     ]
     const result = await db.query(query, values)
     return result.rows[0]
@@ -58,6 +59,17 @@ ORDER BY
     r.fecha DESC, h.hora_inicio ASC;`
     const result = await db.query(query)
     return result.rows
+  }
+  async updateEstado(reservaId, estado, motivoFalta = null) {
+    const query = `
+      UPDATE public.reservas
+      SET estado = $2, motivo_falta = $3
+      WHERE id = $1
+      RETURNING *;
+    `
+    const values = [reservaId, estado, motivoFalta]
+    const result = await db.query(query, values)
+    return result.rows[0]
   }
 }
 
