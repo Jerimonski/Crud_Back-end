@@ -8,15 +8,15 @@ class ReporteDao {
         d.nombre AS deporte,
         d.entrenador,
         u.nombre AS usuario,
-        r.fecha_reserva,
+        r.fecha,
         h.hora_inicio,
         h.hora_fin,
         r.estado
-      FROM reservas r
+        FROM reservas r
       JOIN usuario u ON r.usuario_id = u.id
-      JOIN deporte d ON r.deporte_id = d.id
-      JOIN horario h ON r.horario_id = h.id
-      ORDER BY d.id, r.fecha_reserva;
+      JOIN deportes d ON r.deporte_id = d.id
+      JOIN horarios h ON r.horario_id = h.id
+      ORDER BY d.id, r.fecha;
     `
     const result = await db.query(query)
     return result.rows

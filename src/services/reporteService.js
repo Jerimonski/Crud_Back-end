@@ -4,11 +4,9 @@ import reporteDao from "../daos/reporteDao.js"
 class ReporteService {
   async generarReporteExcel() {
     const reservas = await reporteDao.getReservasPorDeporte()
-
     const workbook = new ExcelJS.Workbook()
     const reservasPorDeporte = {}
 
-    // Agrupar reservas por deporte
     reservas.forEach((r) => {
       if (!reservasPorDeporte[r.deporte_id]) {
         reservasPorDeporte[r.deporte_id] = {
@@ -20,7 +18,6 @@ class ReporteService {
       reservasPorDeporte[r.deporte_id].reservas.push(r)
     })
 
-    // Crear una hoja por cada deporte
     for (const deporteId in reservasPorDeporte) {
       const { nombre, entrenador, reservas } = reservasPorDeporte[deporteId]
       const sheet = workbook.addWorksheet(nombre)
