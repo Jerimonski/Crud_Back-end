@@ -10,10 +10,10 @@ class ReporteService {
     reservas.forEach((r) => {
       if (!reservasPorDeporte[r.deporte_id]) {
         reservasPorDeporte[r.deporte_id] = {
-          nombre: r.deporte_nombre, // Usar el nuevo alias
+          nombre: r.deporte_nombre,
           entrenador: r.entrenador,
-          descripcion: r.deporte_descripcion, // Nuevo
-          fecha_creacion: r.deporte_fecha_creacion, // Nuevo
+          descripcion: r.deporte_descripcion,
+          fecha_creacion: r.deporte_fecha_creacion,
           reservas: [],
         }
       }
@@ -27,14 +27,26 @@ class ReporteService {
 
       // Añadir encabezado general del deporte al inicio
       sheet.addRow([`Reporte de ${nombre}`])
-      sheet.mergeCells("A1:D1") // Ajusta el rango según las columnas que tengas
+      sheet.mergeCells("A1:D1")
       sheet.getCell("A1").font = { bold: true, size: 16 }
       sheet.getCell("A1").alignment = {
         vertical: "middle",
         horizontal: "center",
       }
       sheet.addRow([`Entrenador: ${entrenador}`])
-      sheet.addRow([`Descripción: ${descripcion}`])
+      sheet.addRow([]) // Fila vacía
+
+      // Añadir Descripción del deporte y aplicar Wrap Text
+      const descRow = sheet.addRow([`Descripción: ${descripcion}`])
+      // Asegúrate de que la celda que contiene la descripción sea 'A' y ajusta el rango de fusión si es necesario
+      sheet.mergeCells(
+        descRow.getCell(1).address +
+          ":" +
+          descRow.getCell(sheet.columns.length || 8).address // Ajusta a la última columna de tus datos
+      )
+      // Aplica 'wrapText: true' a la celda que contiene la descripción
+      descRow.getCell(1).alignment = { wrapText: true, vertical: "top" }
+
       sheet.addRow([
         `Fecha de Creación del Deporte: ${new Date(
           fecha_creacion
@@ -44,13 +56,13 @@ class ReporteService {
 
       sheet.columns = [
         { header: "Usuario", key: "usuario_nombre", width: 25 },
-        { header: "Email Usuario", key: "usuario_email", width: 30 }, // Nuevo
-        { header: "Rol Usuario", key: "usuario_rol", width: 15 }, // Nuevo
-        { header: "Día Semana", key: "dia_semana", width: 15 }, // Nuevo
-        { header: "Fecha Reserva", key: "reserva_fecha", width: 18 }, // Actualizado key
+        { header: "Email Usuario", key: "usuario_email", width: 30 },
+        { header: "Rol Usuario", key: "usuario_rol", width: 15 },
+        { header: "Día Semana", key: "dia_semana", width: 15 },
+        { header: "Fecha Reserva", key: "reserva_fecha", width: 18 },
         { header: "Horario", key: "horario", width: 20 },
         { header: "Estado", key: "estado", width: 15 },
-        { header: "Motivo Falta", key: "motivo_falta", width: 30 }, // Nuevo
+        { header: "Motivo Falta", key: "motivo_falta", width: 30 },
       ]
 
       // Estilo para los encabezados de las columnas
@@ -60,20 +72,19 @@ class ReporteService {
       reservas.forEach((r) => {
         if (r.estado?.toLowerCase() === "asistió") asistencias++
 
-        // Formatear la fecha para evitar "Invalid Date"
         const fechaFormateada = new Date(r.reserva_fecha)
           .toISOString()
-          .split("T")[0] // Formato YYYY-MM-DD
+          .split("T")[0]
 
         sheet.addRow({
           usuario_nombre: r.usuario_nombre,
           usuario_email: r.usuario_email,
           usuario_rol: r.usuario_rol,
           dia_semana: r.dia_semana,
-          reserva_fecha: fechaFormateada, // Usar la fecha formateada
+          reserva_fecha: fechaFormateada,
           horario: `${r.hora_inicio} - ${r.hora_fin}`,
           estado: r.estado,
-          motivo_falta: r.motivo_falta || "N/A", // Mostrar N/A si no hay motivo
+          motivo_falta: r.motivo_falta || "N/A",
         })
       })
 
@@ -82,7 +93,7 @@ class ReporteService {
       const porcentaje =
         total > 0 ? ((asistencias / total) * 100).toFixed(2) : "0.00"
 
-      sheet.addRow([]) // Fila vacía para espacio
+      sheet.addRow([])
       sheet.addRow(["Estadísticas Generales:"])
       sheet.getCell(sheet.lastRow.getCell(1).address).font = { bold: true }
       sheet.addRow(["Total Reservas:", total])
