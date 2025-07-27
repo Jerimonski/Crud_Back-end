@@ -12,8 +12,7 @@ class ReporteService {
         reservasPorDeporte[r.deporte_id] = {
           nombre: r.deporte_nombre,
           entrenador: r.entrenador,
-          descripcion: r.deporte_descripcion,
-          fecha_creacion: r.deporte_fecha_creacion,
+          valor: r.deporte_valor,
           reservas: [],
         }
       }
@@ -21,8 +20,8 @@ class ReporteService {
     })
 
     for (const deporteId in reservasPorDeporte) {
-      const { nombre, entrenador, descripcion, fecha_creacion, reservas } =
-        reservasPorDeporte[deporteId]
+      const { nombre, entrenador, valor, reservas } =
+        reservasPorDeporte[deporteId] // <-- Ahora desestructuramos 'valor'
       const sheet = workbook.addWorksheet(nombre)
 
       // Añadir encabezado general del deporte al inicio
@@ -34,25 +33,8 @@ class ReporteService {
         horizontal: "center",
       }
       sheet.addRow([`Entrenador: ${entrenador}`])
-      sheet.addRow([]) // Fila vacía
-
-      // Añadir Descripción del deporte y aplicar Wrap Text
-      const descRow = sheet.addRow([`Descripción: ${descripcion}`])
-      // Asegúrate de que la celda que contiene la descripción sea 'A' y ajusta el rango de fusión si es necesario
-      sheet.mergeCells(
-        descRow.getCell(1).address +
-          ":" +
-          descRow.getCell(sheet.columns.length || 8).address // Ajusta a la última columna de tus datos
-      )
-      // Aplica 'wrapText: true' a la celda que contiene la descripción
-      descRow.getCell(1).alignment = { wrapText: true, vertical: "top" }
-
-      sheet.addRow([
-        `Fecha de Creación del Deporte: ${new Date(
-          fecha_creacion
-        ).toLocaleDateString("es-CL")}`,
-      ])
-      sheet.addRow([]) // Fila vacía para espacio
+      sheet.addRow([`Valor por Sesión: $${valor}`])
+      sheet.addRow([])
 
       sheet.columns = [
         { header: "Usuario", key: "usuario_nombre", width: 25 },
@@ -65,7 +47,6 @@ class ReporteService {
         { header: "Motivo Falta", key: "motivo_falta", width: 30 },
       ]
 
-      // Estilo para los encabezados de las columnas
       sheet.getRow(sheet.lastRow.number).font = { bold: true }
 
       let asistencias = 0
@@ -100,6 +81,10 @@ class ReporteService {
       sheet.addRow(["Asistencias:", asistencias])
       sheet.addRow(["Faltas:", faltas])
       sheet.addRow(["% Asistencia:", `${porcentaje}%`])
+      sheet.addRow([
+        "Ingreso Estimado:",
+        `$${(asistencias * valor).toFixed(2)}`,
+      ])
     }
 
     return await workbook.xlsx.writeBuffer()

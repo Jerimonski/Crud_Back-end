@@ -7,17 +7,16 @@ class ReporteDao {
         d.id AS deporte_id,
         d.nombre AS deporte_nombre,
         d.entrenador,
-        d.descripcion AS deporte_descripcion, 
-        d.fecha_creacion AS deporte_fecha_creacion, 
+        d.valor AS deporte_valor,   -- ¡Añadido el valor del deporte!
         u.nombre AS usuario_nombre,
-        u.email AS usuario_email,   
-        u.rol AS usuario_rol,    
-        r.fecha AS reserva_fecha,  
-        h.dia_semana,             
+        u.email AS usuario_email,
+        u.rol AS usuario_rol,
+        r.fecha AS reserva_fecha,
+        h.dia_semana,
         h.hora_inicio,
         h.hora_fin,
         r.estado,
-        r.motivo_falta              
+        r.motivo_falta
       FROM reservas r
       JOIN usuario u ON r.usuario_id = u.id
       JOIN deportes d ON r.deporte_id = d.id
