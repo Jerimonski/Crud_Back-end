@@ -21,7 +21,7 @@ class ReporteService {
 
     for (const deporteId in reservasPorDeporte) {
       const { nombre, entrenador, valor, reservas } =
-        reservasPorDeporte[deporteId] // <-- Ahora desestructuramos 'valor'
+        reservasPorDeporte[deporteId]
       const sheet = workbook.addWorksheet(nombre)
 
       // Añadir encabezado general del deporte al inicio
@@ -32,9 +32,9 @@ class ReporteService {
         vertical: "middle",
         horizontal: "center",
       }
-      sheet.addRow([`Entrenador: ${entrenador}`])
+      sheet.addRow([`Entrenador: ${entrenador}`]) // Mantiene el entrenador como solicitado
       sheet.addRow([`Valor por Sesión: $${valor}`])
-      sheet.addRow([])
+      sheet.addRow([]) // Fila vacía para espacio
 
       sheet.columns = [
         { header: "Usuario", key: "usuario_nombre", width: 25 },
@@ -47,11 +47,22 @@ class ReporteService {
         { header: "Motivo Falta", key: "motivo_falta", width: 30 },
       ]
 
+      // Estilo para los encabezados de las columnas
       sheet.getRow(sheet.lastRow.number).font = { bold: true }
 
       let asistencias = 0
+      let faltas = 0
+      let totalReservasContabilizables = 0 // Para contar solo las reservas con estado Asistió o Faltó
+
       reservas.forEach((r) => {
-        if (r.estado?.toLowerCase() === "asistió") asistencias++
+        // Solo contabilizamos asistencias y faltas si el estado es definitivo
+        if (r.estado?.toLowerCase() === "asistió") {
+          asistencias++
+          totalReservasContabilizables++
+        } else if (r.estado?.toLowerCase() === "faltó") {
+          faltas++
+          totalReservasContabilizables++
+        }
 
         const fechaFormateada = new Date(r.reserva_fecha)
           .toISOString()
@@ -69,22 +80,21 @@ class ReporteService {
         })
       })
 
-      const total = reservas.length
-      const faltas = total - asistencias
-      const porcentaje =
-        total > 0 ? ((asistencias / total) * 100).toFixed(2) : "0.00"
+      const total = reservas.length // Total de todas las reservas (incluyendo confirmadas)
+      const porcentajeAsistencia =
+        totalReservasContabilizables > 0
+          ? ((asistencias / totalReservasContabilizables) * 100).toFixed(2)
+          : "0.00"
+      const ingresoEstimado = (asistencias * valor).toFixed(2)
 
-      sheet.addRow([])
+      sheet.addRow([]) // Fila vacía para espacio
       sheet.addRow(["Estadísticas Generales:"])
       sheet.getCell(sheet.lastRow.getCell(1).address).font = { bold: true }
-      sheet.addRow(["Total Reservas:", total])
+      sheet.addRow(["Total Reservas:", total]) // Total de todas las reservas
       sheet.addRow(["Asistencias:", asistencias])
       sheet.addRow(["Faltas:", faltas])
-      sheet.addRow(["% Asistencia:", `${porcentaje}%`])
-      sheet.addRow([
-        "Ingreso Estimado:",
-        `$${(asistencias * valor).toFixed(2)}`,
-      ])
+      sheet.addRow(["% Asistencia:", `${porcentajeAsistencia}%`])
+      sheet.addRow(["Ingreso Estimado:", `$${ingresoEstimado}`]) // Añadido ingreso estimado
     }
 
     return await workbook.xlsx.writeBuffer()
