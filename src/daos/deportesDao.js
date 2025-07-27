@@ -13,21 +13,32 @@ class DeportesDao {
 
   async create(deporte) {
     const query = `
-      INSERT INTO deportes (nombre, descripcion, entrenador)
-      VALUES ($1, $2, $3)
-      RETURNING *`
-    const values = [deporte.nombre, deporte.descripcion, deporte.entrenador]
+    INSERT INTO deportes (nombre, descripcion, entrenador, valor)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *`
+    const values = [
+      deporte.nombre,
+      deporte.descripcion,
+      deporte.entrenador,
+      deporte.valor,
+    ]
     const result = await db.query(query, values)
     return result.rows[0]
   }
 
   async update(id, deporte) {
     const query = `
-      UPDATE deportes
-      SET nombre = $1, descripcion = $2, entrenador = $3
-      WHERE id = $4
-      RETURNING *`
-    const values = [deporte.nombre, deporte.descripcion, deporte.entrenador, id]
+    UPDATE deportes
+    SET nombre = $1, descripcion = $2, entrenador = $3, valor = $4
+    WHERE id = $5
+    RETURNING *`
+    const values = [
+      deporte.nombre,
+      deporte.descripcion,
+      deporte.entrenador,
+      deporte.valor,
+      id,
+    ]
     const result = await db.query(query, values)
     return result.rows[0]
   }
