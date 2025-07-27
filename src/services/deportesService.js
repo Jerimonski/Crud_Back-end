@@ -20,6 +20,10 @@ class DeportesService {
   delete(id) {
     return deportesDao.delete(id)
   }
+
+  getByNombre(nombre) {
+    return deportesDao.getByNombre(nombre)
+  }
 }
 
 export default new DeportesService()

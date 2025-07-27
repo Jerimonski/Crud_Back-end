@@ -12,8 +12,7 @@ class UsuarioDao {
   }
 
   async create(usuario) {
-    const query = `
-      INSERT INTO usuario (nombre, email, contraseña)
+    const query = `INSERT INTO usuario (nombre, email, contraseña)
       VALUES ($1, $2, $3)
       RETURNING *`
     const values = [usuario.nombre, usuario.email, usuario.contraseña]
@@ -22,10 +21,9 @@ class UsuarioDao {
   }
 
   async update(id, usuario) {
-    const query = `
-      UPDATE usuario
+    const query = `UPDATE usuario
       SET nombre = $1, email = $2, contraseña = $3
-      WHERE id = $6 RETURNING *`
+      WHERE id = $4 RETURNING *`
     const values = [usuario.nombre, usuario.email, usuario.contraseña, id]
     const result = await db.query(query, values)
     return result.rows[0]

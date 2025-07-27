@@ -10,7 +10,7 @@ class ComentarioService {
   }
 
   async getByDeporte(deporte) {
-    return await comentariosDao.findByDeporte(deporte)
+    return comentariosDao.findByDeporte(deporte)
   }
 }
 
