@@ -36,8 +36,8 @@ class DeportesDao {
       deporte.nombre,
       deporte.descripcion,
       deporte.entrenador,
-      id,
       deporte.valor,
+      id,
     ]
     const result = await db.query(query, values)
     return result.rows[0]
