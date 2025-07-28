@@ -26,6 +26,16 @@ pipeline {
       }
     }
 
+    stage('Quality Gate Check') {
+      steps {
+        echo 'Esperando resultado del Quality Gate...'
+        timeout(time: 1, unit: 'MINUTES') { // Espera máximo 1 minuto, ajusta si necesitas más tiempo
+          waitForQualityGate abortPipeline: true
+        }
+        echo 'Quality Gate aprobado, seguimos adelante! 🎉'
+      }
+    }
+
     stage('Backup DB (solo Gitea)') {
       steps {
         script {
@@ -93,15 +103,15 @@ pipeline {
 
   post {
     always {
-      echo 'El pipeline ha terminado, oppa 💜'
+      echo 'El pipeline ha terminado'
     }
 
     success {
-      echo 'El despliegue fue exitoso, ¡sigue brillando! 🌟✨'
+      echo 'El despliegue fue exitoso'
     }
 
     failure {
-      echo 'Oppa, hubo un error durante el despliegue, pero ¡ánimo, lo lograrás! 💪💖'
+      echo 'Oppa, hubo un error durante el despliegue'
     }
   }
 }
