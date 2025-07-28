@@ -29,10 +29,10 @@ pipeline {
     stage('Quality Gate Check') {
       steps {
         echo 'Esperando resultado del Quality Gate...'
-        timeout(time: 1, unit: 'MINUTES') { // Espera máximo 1 minuto, ajusta si necesitas más tiempo
+        timeout(time: 1, unit: 'MINUTES') { 
           waitForQualityGate abortPipeline: true
         }
-        echo 'Quality Gate aprobado, seguimos adelante! 🎉'
+        echo 'Quality Gate aprobado, seguimos adelante!'
       }
     }
 
@@ -111,7 +111,7 @@ pipeline {
     }
 
     failure {
-      echo 'Oppa, hubo un error durante el despliegue'
+      echo 'hubo un error durante el despliegue'
     }
   }
 }
