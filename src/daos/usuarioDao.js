@@ -25,7 +25,7 @@ class UsuarioDao {
     const query = `
       UPDATE usuario
       SET nombre = $1, email = $2, contraseña = $3
-      WHERE id = $6 RETURNING *`
+      WHERE id = $4 RETURNING *`
     const values = [usuario.nombre, usuario.email, usuario.contraseña, id]
     const result = await db.query(query, values)
     return result.rows[0]

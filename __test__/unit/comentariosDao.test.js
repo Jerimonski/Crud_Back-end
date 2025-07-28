@@ -104,7 +104,8 @@ describe("ComentariosDao - Pruebas Unitarias", () => {
     expect(db.query).toHaveBeenCalledTimes(1)
     // La cadena SQL debe coincidir EXACTAMENTE con la del DAO, incluyendo espacios y saltos de línea
     expect(db.query).toHaveBeenCalledWith(
-      `INSERT INTO comentarios (usuario_id, deporte_id, contenido, valoracion, fecha)
+      `
+      INSERT INTO comentarios (usuario_id, deporte_id, contenido, valoracion, fecha)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *`,
       [
@@ -143,13 +144,13 @@ describe("ComentariosDao - Pruebas Unitarias", () => {
 
     expect(result).toEqual(mockComentarios)
     expect(db.query).toHaveBeenCalledTimes(1)
-    // La cadena SQL debe coincidir EXACTAMENTE con la del DAO, incluyendo espacios y saltos de línea
     expect(db.query).toHaveBeenCalledWith(
-      `SELECT c.id, u.nombre, c.contenido, c.fecha,
+      `
+    SELECT c.id, u.nombre, c.contenido, c.fecha,
     c.deporte_id, c.valoracion FROM comentarios c
     JOIN usuario u ON c.usuario_id = u.id
-    WHERE c.deporte_id = $1 
-    ORDER BY c.fecha DESC; 
+    WHERE c.deporte_id = $1
+    ORDER BY c.fecha DESC;
     `,
       [deporteId]
     )
@@ -163,13 +164,13 @@ describe("ComentariosDao - Pruebas Unitarias", () => {
 
     expect(result).toEqual([])
     expect(db.query).toHaveBeenCalledTimes(1)
-    // La cadena SQL debe coincidir EXACTAMENTE con la del DAO, incluyendo espacios y saltos de línea
     expect(db.query).toHaveBeenCalledWith(
-      `SELECT c.id, u.nombre, c.contenido, c.fecha,
+      `
+    SELECT c.id, u.nombre, c.contenido, c.fecha,
     c.deporte_id, c.valoracion FROM comentarios c
     JOIN usuario u ON c.usuario_id = u.id
-    WHERE c.deporte_id = $1 
-    ORDER BY c.fecha DESC; 
+    WHERE c.deporte_id = $1
+    ORDER BY c.fecha DESC;
     `,
       [deporteId]
     )

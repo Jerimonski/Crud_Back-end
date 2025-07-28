@@ -1,4 +1,4 @@
-class reservasDto {
+class ReservasDto {
   constructor({
     usuario_id,
     deporte_id,
@@ -7,6 +7,9 @@ class reservasDto {
     estado,
     motivo_falta = NULL,
   }) {
+    if (!contenido || typeof contenido !== "string") {
+      throw new Error("Contenido inválido")
+    }
     this.usuario_id = usuario_id
     this.deporte_id = deporte_id
     this.horario_id = horario_id
@@ -16,4 +19,4 @@ class reservasDto {
   }
 }
 
-export default reservasDto
+export default ReservasDto

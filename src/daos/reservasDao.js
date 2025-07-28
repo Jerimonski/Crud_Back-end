@@ -1,6 +1,6 @@
 import db from "../database/connection.js"
 
-class reservasDao {
+class ReservasDao {
   async create(reserva) {
     const query = `
       INSERT INTO public.reservas (usuario_id, deporte_id, horario_id, fecha, estado, motivo_falta)
@@ -73,4 +73,4 @@ ORDER BY
   }
 }
 
-export default new reservasDao()
+export default new ReservasDao()

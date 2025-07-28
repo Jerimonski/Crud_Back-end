@@ -1,8 +1,8 @@
-import reservasDao from "../daos/reservasDao.js"
+import ReservasDao from "../daos/reservasDao.js"
 
-class reservasService {
+class ReservasService {
   async create(dto) {
-    const isBooked = await reservasDao.isSlotBooked(
+    const isBooked = await ReservasDao.isSlotBooked(
       dto.deporte_id,
       dto.horario_id,
       dto.fecha
@@ -12,16 +12,16 @@ class reservasService {
         "El horario seleccionado ya está reservado para este deporte y fecha."
       )
     }
-    const nuevaReserva = await reservasDao.create(dto)
+    const nuevaReserva = await ReservasDao.create(dto)
     return nuevaReserva
   }
 
   async getAll() {
-    return await reservasDao.getAllBookings()
+    return await ReservasDao.getAllBookings()
   }
 
   async delete(reservasId) {
-    return await reservasDao.delete(reservasId)
+    return await ReservasDao.delete(reservasId)
   }
 
   async updateEstadoReserva(reservaId, estado, motivoFalta) {
@@ -34,7 +34,7 @@ class reservasService {
 
     const motivoFinal = estado === "Faltó" ? motivoFalta : null
 
-    const reservaActualizada = await reservasDao.updateEstado(
+    const reservaActualizada = await ReservasDao.updateEstado(
       reservaId,
       estado,
       motivoFinal
@@ -46,4 +46,4 @@ class reservasService {
   }
 }
 
-export default new reservasService()
+export default new ReservasService()

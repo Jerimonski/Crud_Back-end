@@ -1,4 +1,4 @@
-import reservasServices from "../services/reservasServices.js"
+import ReservasServices from "../services/reservasServices.js"
 import reservasDto from "./../dtos/reservasDto.js"
 
 class ReservasController {
@@ -37,7 +37,7 @@ class ReservasController {
         estado,
       })
 
-      const nuevaReserva = await reservasServices.create(dto)
+      const nuevaReserva = await ReservasServices.create(dto)
       res.status(201).json(nuevaReserva)
     } catch (error) {
       console.error("Error al crear reserva:", error)
@@ -52,7 +52,7 @@ class ReservasController {
 
   async getAll(req, res) {
     try {
-      const reservas = await reservasServices.getAll()
+      const reservas = await ReservasServices.getAll()
       res.json(reservas)
     } catch (error) {
       console.error("Error al obtener todas las reservas:", error)
@@ -72,7 +72,7 @@ class ReservasController {
           .json({ mensaje: "ID de reserva inválido. Debe ser un número." })
       }
 
-      const rowCount = await reservasServices.delete(reservaId)
+      const rowCount = await ReservasServices.delete(reservaId)
 
       if (rowCount === 0) {
         return res
@@ -101,7 +101,7 @@ class ReservasController {
         return res.status(400).json({ mensaje: "El estado es requerido." })
       }
 
-      const reservaActualizada = await reservasServices.updateEstadoReserva(
+      const reservaActualizada = await ReservasServices.updateEstadoReserva(
         reservaId,
         estado,
         motivo_falta

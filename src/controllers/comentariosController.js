@@ -1,7 +1,7 @@
 import comentariosService from "../services/comentariosService.js"
-import comentariosDto from "../dtos/comentariosDto.js"
+import ComentariosDto from "../dtos/comentariosDto.js"
 
-class comentariosController {
+class ComentariosController {
   async getAll(req, res) {
     try {
       const comentarios = await comentariosService.getAll()
@@ -16,7 +16,7 @@ class comentariosController {
   async create(req, res) {
     try {
       console.log("Body recibido:", req.body)
-      const dto = new comentariosDto(req.body)
+      const dto = new ComentariosDto(req.body)
       const nuevoComentario = await comentariosService.create(dto)
       res.status(201).json(nuevoComentario)
     } catch (error) {
@@ -45,4 +45,4 @@ class comentariosController {
   }
 }
 
-export default new comentariosController()
+export default new ComentariosController()
